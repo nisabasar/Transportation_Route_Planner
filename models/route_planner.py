@@ -1,51 +1,55 @@
 # models/route_planner.py
 import math
 import heapq
+from datetime import datetime, timedelta
 from models.stop import Stop
 from models.vehicle import Taxi
-from utils.distance import haversine
 from models.passenger import Genel, Ogrenci, Yasli
+from utils.distance import haversine
 
-# Ortalama hızlar (km/dk cinsinden)
-AVERAGE_TAXI_SPEED = 0.67      # Yaklaşık 40 km/saat
-AVERAGE_WALK_SPEED = 0.083     # Yaklaşık 5 km/saat
-
-# Taksi kullanım eşik mesafesi (km)
+# Ortalama hızlar (km/dk)
+AVERAGE_TAXI_SPEED = 0.67   # ~40 km/s
+AVERAGE_WALK_SPEED = 0.083  # ~5 km/s
 TAXI_THRESHOLD = 3.0
+
+# Mode => renk eşlemesi (haritada farklı renk polylineler)
+MODE_COLORS = {
+    "taksi": "red",
+    "bus": "blue",
+    "tram": "orange",
+    "yürüme": "gray",
+    "transfer": "purple"
+}
 
 class RoutePlanner:
     def __init__(self, data, taxi_pricing):
         self.city = data.get("city", "")
-        self.taxi_info = data.get("taxi", taxi_pricing)
+        self.taxi_info = taxi_pricing
         self.taxi = Taxi(self.taxi_info["openingFee"], self.taxi_info["costPerKm"])
-        # Durakları id'ye göre sakla
         self.stops = {}
         for stop_data in data["duraklar"]:
             stop_obj = Stop(stop_data)
             self.stops[stop_obj.id] = stop_obj
-        # Grafik yapısını oluştur
         self.graph = self.build_graph()
 
     def build_graph(self):
         graph = {}
         for stop_id, stop in self.stops.items():
             edges = []
-            # nextStops üzerinden bağlantılar (süre, mesafe, ücret bilgileri)
             for ns in stop.nextStops:
                 edge = {
                     "to": ns["stopId"],
-                    "time": ns["sure"],
+                    "time": ns["sure"],      # dakika
                     "distance": ns["mesafe"],
                     "cost": ns["ucret"],
-                    "mode": stop.type  # bus veya tram
+                    "mode": stop.type
                 }
                 edges.append(edge)
-            # Transfer bağlantısı varsa ekle
             if stop.transfer:
                 edge = {
                     "to": stop.transfer["transferStopId"],
                     "time": stop.transfer["transferSure"],
-                    "distance": 0,  # transferde mesafe hesaplanmaz
+                    "distance": 0,
                     "cost": stop.transfer["transferUcret"],
                     "mode": "transfer"
                 }
@@ -56,19 +60,19 @@ class RoutePlanner:
     def get_nearest_stop(self, lat, lon, mode_filter=None):
         nearest = None
         min_dist = float("inf")
-        for stop in self.stops.values():
-            if mode_filter and stop.type != mode_filter:
+        for s in self.stops.values():
+            if mode_filter and s.type != mode_filter:
                 continue
-            d = haversine(lat, lon, stop.lat, stop.lon)
+            d = haversine(lat, lon, s.lat, s.lon)
             if d < min_dist:
                 min_dist = d
-                nearest = stop
+                nearest = s
         return nearest, min_dist
 
     def dijkstra(self, start_id, end_id, mode_filter=None):
+        distances = {k: float("inf") for k in self.stops}
         queue = []
         heapq.heappush(queue, (0, start_id, []))
-        distances = {stop_id: float("inf") for stop_id in self.stops}
         distances[start_id] = 0
 
         while queue:
@@ -76,7 +80,7 @@ class RoutePlanner:
             path = path + [current_id]
             if current_id == end_id:
                 return current_time, path
-            for edge in self.graph.get(current_id, []):
+            for edge in self.graph[current_id]:
                 if mode_filter and edge["mode"] not in [mode_filter, "transfer"]:
                     continue
                 neighbor = edge["to"]
@@ -90,134 +94,79 @@ class RoutePlanner:
         total_time, path = self.dijkstra(start_stop.id, dest_stop.id, mode_filter)
         if not path or total_time is None:
             return None
+        steps = []
         total_distance = 0
         total_cost = 0
-        steps = []
+        latlon_segments = []  # her adımın latlon listesi (renkli çizim için)
         for i in range(len(path) - 1):
             current = path[i]
             next_stop = path[i+1]
             edge = next(e for e in self.graph[current] if e["to"] == next_stop)
+            mode = edge["mode"]
+            color = MODE_COLORS.get(mode, "black")
+
+            step_distance = edge["distance"]
+            step_cost = edge["cost"]
+            step_time = edge["time"]
+
             steps.append({
                 "from": current,
                 "to": next_stop,
-                "mode": edge["mode"],
-                "time": edge["time"],
-                "distance": edge["distance"],
-                "cost": edge["cost"]
+                "mode": mode,
+                "time": step_time,
+                "distance": step_distance,
+                "cost": step_cost,
+                "color": color
             })
-            total_distance += edge["distance"]
-            total_cost += edge["cost"]
+            total_distance += step_distance
+            total_cost += step_cost
+
+            # lat/lon
+            latlon_segments.append({
+                "color": color,
+                "points": [
+                    (self.stops[current].lat, self.stops[current].lon),
+                    (self.stops[next_stop].lat, self.stops[next_stop].lon)
+                ]
+            })
         return {
             "steps": steps,
             "total_time": total_time,
             "total_distance": total_distance,
-            "total_cost": total_cost
+            "total_cost": total_cost,
+            "latlon_segments": latlon_segments
         }
 
     def plan_taxi_route(self, start_lat, start_lon, dest_lat, dest_lon):
-        distance = haversine(start_lat, start_lon, dest_lat, dest_lon)
-        time = distance / AVERAGE_TAXI_SPEED
-        cost = self.taxi.calculate_cost(distance)
+        dist = haversine(start_lat, start_lon, dest_lat, dest_lon)
+        time = dist / AVERAGE_TAXI_SPEED
+        cost = self.taxi.calculate_cost(dist)
+        color = MODE_COLORS["taksi"]
         return {
             "steps": [{
                 "from": "Başlangıç",
                 "to": "Varış",
                 "mode": "taksi",
                 "time": round(time, 1),
-                "distance": round(distance, 2),
-                "cost": round(cost, 2)
+                "distance": round(dist, 2),
+                "cost": round(cost, 2),
+                "color": color
             }],
             "total_time": round(time, 1),
-            "total_distance": round(distance, 2),
-            "total_cost": round(cost, 2)
+            "total_distance": round(dist, 2),
+            "total_cost": round(cost, 2),
+            "latlon_segments": [{
+                "color": color,
+                "points": [
+                    (start_lat, start_lon),
+                    (dest_lat, dest_lon)
+                ]
+            }]
         }
 
-    def get_alternative_routes(self, start_lat, start_lon, dest_lat, dest_lon, passenger_type="genel"):
-        alternatives = {}
-
-        # 1. Direkt Taksi Rotası
-        taxi_route = self.plan_taxi_route(start_lat, start_lon, dest_lat, dest_lon)
-        alternatives["taksi"] = taxi_route
-
-        # 2. Toplu Taşıma Rotası (karma rota)
-        start_stop, start_walk = self.get_nearest_stop(start_lat, start_lon)
-        dest_stop, dest_walk = self.get_nearest_stop(dest_lat, dest_lon)
-
-        walk_time_start = start_walk / AVERAGE_WALK_SPEED  # dakika
-        walk_time_end = dest_walk / AVERAGE_WALK_SPEED
-
-        public_route = self.plan_public_route(start_stop, dest_stop)
-        steps = []
-        if public_route:
-            # Başlangıç segmenti: yürüme veya taksi
-            if start_walk > TAXI_THRESHOLD:
-                taxi_segment = self.plan_taxi_route(start_lat, start_lon, start_stop.lat, start_stop.lon)
-                steps.append({
-                    "from": "Başlangıç",
-                    "to": start_stop.id,
-                    "mode": "taksi",
-                    "time": taxi_segment["total_time"],
-                    "distance": taxi_segment["total_distance"],
-                    "cost": taxi_segment["total_cost"]
-                })
-            else:
-                steps.append({
-                    "from": "Başlangıç",
-                    "to": start_stop.id,
-                    "mode": "yürüme",
-                    "time": round(walk_time_start, 1),
-                    "distance": round(start_walk, 2),
-                    "cost": 0
-                })
-            # Toplu taşıma adımları
-            steps.extend(public_route["steps"])
-            # Varış segmenti: yürüme veya taksi
-            if dest_walk > TAXI_THRESHOLD:
-                taxi_segment = self.plan_taxi_route(dest_stop.lat, dest_stop.lon, dest_lat, dest_lon)
-                steps.append({
-                    "from": dest_stop.id,
-                    "to": "Varış",
-                    "mode": "taksi",
-                    "time": taxi_segment["total_time"],
-                    "distance": taxi_segment["total_distance"],
-                    "cost": taxi_segment["total_cost"]
-                })
-            else:
-                steps.append({
-                    "from": dest_stop.id,
-                    "to": "Varış",
-                    "mode": "yürüme",
-                    "time": round(walk_time_end, 1),
-                    "distance": round(dest_walk, 2),
-                    "cost": 0
-                })
-
-            total_time = walk_time_start + public_route["total_time"] + walk_time_end
-            total_distance = start_walk + public_route["total_distance"] + dest_walk
-            total_cost = public_route["total_cost"]
-
-            alternatives["toplu"] = {
-                "steps": steps,
-                "total_time": round(total_time, 1),
-                "total_distance": round(total_distance, 2),
-                "total_cost": round(total_cost, 2)
-            }
-        else:
-            alternatives["toplu"] = None
-
-        # 3. Sadece Otobüs Rotası (mode filter: "bus")
-        bus_start, _ = self.get_nearest_stop(start_lat, start_lon, mode_filter="bus")
-        bus_dest, _ = self.get_nearest_stop(dest_lat, dest_lon, mode_filter="bus")
-        bus_route = self.plan_public_route(bus_start, bus_dest, mode_filter="bus")
-        alternatives["sadece_otobus"] = bus_route if bus_route else None
-
-        # 4. Sadece Tramvay Rotası (mode filter: "tram")
-        tram_start, _ = self.get_nearest_stop(start_lat, start_lon, mode_filter="tram")
-        tram_dest, _ = self.get_nearest_stop(dest_lat, dest_lon, mode_filter="tram")
-        tram_route = self.plan_public_route(tram_start, tram_dest, mode_filter="tram")
-        alternatives["sadece_tramvay"] = tram_route if tram_route else None
-
-        # Uygulanan indirim oranı (yolcu tipi)
+    def get_alternative_routes(self, start_lat, start_lon, dest_lat, dest_lon,
+                               passenger_type="genel", start_time=None):
+        # Yolcu indirimi
         if passenger_type == "ogrenci":
             discount_rate = Ogrenci().get_discount_rate()
         elif passenger_type == "65+":
@@ -225,9 +174,127 @@ class RoutePlanner:
         else:
             discount_rate = Genel().get_discount_rate()
 
-        for key in alternatives:
-            route = alternatives[key]
-            if route is not None:
+        # 1) Direkt Taksi
+        taksi_route = self.plan_taxi_route(start_lat, start_lon, dest_lat, dest_lon)
+
+        # 2) Karma (toplu) Rota
+        start_stop, dist_start = self.get_nearest_stop(start_lat, start_lon)
+        dest_stop, dist_dest = self.get_nearest_stop(dest_lat, dest_lon)
+
+        walk_time_start = dist_start / AVERAGE_WALK_SPEED
+        walk_time_end = dist_dest / AVERAGE_WALK_SPEED
+
+        public_core = self.plan_public_route(start_stop, dest_stop)
+        if public_core:
+            steps_combined = []
+            total_time = 0
+            total_cost = 0
+            total_dist = 0
+            latlon_segments = []
+
+            # 2a) Başlangıç segmenti
+            if dist_start > TAXI_THRESHOLD:
+                # taksi
+                seg = self.plan_taxi_route(start_lat, start_lon, start_stop.lat, start_stop.lon)
+                steps_combined.extend(seg["steps"])
+                total_time += seg["total_time"]
+                total_cost += seg["total_cost"]
+                total_dist += seg["total_distance"]
+                latlon_segments.extend(seg["latlon_segments"])
+            else:
+                # yürüme
+                steps_combined.append({
+                    "from": "Başlangıç",
+                    "to": start_stop.id,
+                    "mode": "yürüme",
+                    "time": round(walk_time_start, 1),
+                    "distance": round(dist_start, 2),
+                    "cost": 0,
+                    "color": MODE_COLORS["yürüme"]
+                })
+                total_time += walk_time_start
+                total_dist += dist_start
+                latlon_segments.append({
+                    "color": MODE_COLORS["yürüme"],
+                    "points": [
+                        (start_lat, start_lon),
+                        (start_stop.lat, start_stop.lon)
+                    ]
+                })
+
+            # 2b) Toplu taşıma
+            steps_combined.extend(public_core["steps"])
+            total_time += public_core["total_time"]
+            total_cost += public_core["total_cost"]
+            total_dist += public_core["total_distance"]
+            latlon_segments.extend(public_core["latlon_segments"])
+
+            # 2c) Varış segmenti
+            if dist_dest > TAXI_THRESHOLD:
+                seg = self.plan_taxi_route(dest_stop.lat, dest_stop.lon, dest_lat, dest_lon)
+                steps_combined.extend(seg["steps"])
+                total_time += seg["total_time"]
+                total_cost += seg["total_cost"]
+                total_dist += seg["total_distance"]
+                latlon_segments.extend(seg["latlon_segments"])
+            else:
+                steps_combined.append({
+                    "from": dest_stop.id,
+                    "to": "Varış",
+                    "mode": "yürüme",
+                    "time": round(walk_time_end, 1),
+                    "distance": round(dist_dest, 2),
+                    "cost": 0,
+                    "color": MODE_COLORS["yürüme"]
+                })
+                total_time += walk_time_end
+                total_dist += dist_dest
+                latlon_segments.append({
+                    "color": MODE_COLORS["yürüme"],
+                    "points": [
+                        (dest_stop.lat, dest_stop.lon),
+                        (dest_lat, dest_lon)
+                    ]
+                })
+
+            toplu_route = {
+                "steps": steps_combined,
+                "total_time": round(total_time, 1),
+                "total_distance": round(total_dist, 2),
+                "total_cost": round(total_cost, 2),
+                "latlon_segments": latlon_segments
+            }
+        else:
+            toplu_route = None
+
+        # 3) Sadece Otobüs
+        bus_start, _ = self.get_nearest_stop(start_lat, start_lon, mode_filter="bus")
+        bus_dest, _ = self.get_nearest_stop(dest_lat, dest_lon, mode_filter="bus")
+        bus_route = self.plan_public_route(bus_start, bus_dest, mode_filter="bus")
+
+        # 4) Sadece Tramvay
+        tram_start, _ = self.get_nearest_stop(start_lat, start_lon, mode_filter="tram")
+        tram_dest, _ = self.get_nearest_stop(dest_lat, dest_lon, mode_filter="tram")
+        tram_route = self.plan_public_route(tram_start, tram_dest, mode_filter="tram")
+
+        # Rota sözlüğü
+        alternatives = {
+            "toplu": toplu_route,
+            "sadece_otobus": bus_route,
+            "sadece_tramvay": tram_route,
+            "taksi": taksi_route
+        }
+
+        # İndirim uygula
+        for key, route in alternatives.items():
+            if route:
                 route["discounted_cost"] = round(route["total_cost"] * (1 - discount_rate), 2)
+
+        # Varış saati (start_time + total_time)
+        if start_time:
+            for key, route in alternatives.items():
+                if route:
+                    arrival_dt = start_time + timedelta(minutes=route["total_time"])
+                    route["arrival_time"] = arrival_dt.strftime("%d.%m.%Y %H:%M")
 
         return alternatives

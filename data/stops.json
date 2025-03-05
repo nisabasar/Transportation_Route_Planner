@@ -90,6 +90,7 @@
       "nextStops": [],
       "transfer": null
     },
+
     {
       "id": "bus_symbolavm",
       "name": "Symbol AVM (Bus)",
@@ -110,6 +111,7 @@
       "nextStops": [],
       "transfer": null
     },
+
     {
       "id": "tram_otogar",
       "name": "Otogar (Tram)",

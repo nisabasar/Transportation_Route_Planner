@@ -99,6 +99,29 @@ content %}
                 <option value="65+">65+</option>
               </select>
             </div>
+            <!-- Ödeme Seçimi -->
+            <div class="mb-3">
+              <label for="payment_type" class="form-label">Ödeme Yöntemi</label>
+              <select id="payment_type" name="payment_type" class="form-select">
+                <option value="nakit">Nakit</option>
+                <option value="kredi">Kredi Kartı</option>
+                <option value="kentkart">KentKart</option>
+              </select>
+            </div>
+            <!-- Bakiye/Limit -->
+            <div class="mb-3">
+              <label for="payment_amount" class="form-label"
+                >Bakiye / Limit (TL)</label
+              >
+              <input
+                type="number"
+                class="form-control"
+                id="payment_amount"
+                name="payment_amount"
+                placeholder="100"
+              />
+            </div>
+
             <button type="submit" class="btn btn-primary btn-lg">
               Rotayı Hesapla
             </button>

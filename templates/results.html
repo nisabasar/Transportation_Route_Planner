@@ -3,7 +3,7 @@
 content %}
 <div class="fade-in-up">
   <h1 class="mb-4">Rota Sonuçları</h1>
-  <p class="text-muted">
+  <p>
     Girdiğiniz bilgilere göre hesaplanan alternatif rota seçenekleri aşağıdadır.
   </p>
 
@@ -62,8 +62,7 @@ content %}
                   {% if step.mode == 'taksi' %}🚖 Taksi {% elif step.mode ==
                   'bus' %}🚌 Otobüs {% elif step.mode == 'tram' %}🚋 Tramvay {%
                   elif step.mode == 'yürüme' %}🚶 Yürüme {% elif step.mode ==
-                  'transfer' %}🔄 Transfer {% else %}{{ step.mode | capitalize
-                  }} {% endif %}
+                  'transfer' %}🔄 Transfer {% else %}{{ step.mode }} {% endif %}
                 </td>
                 <td>{{ step.time }}</td>
                 <td>{{ step.distance }}</td>
@@ -72,12 +71,19 @@ content %}
               {% endfor %}
             </tbody>
           </table>
+
           <p><strong>Toplam Süre:</strong> {{ route.total_time }} dk</p>
           <p><strong>Toplam Mesafe:</strong> {{ route.total_distance }} km</p>
           <p><strong>Toplam Ücret:</strong> {{ route.total_cost }} TL</p>
           <p>
             <strong>İndirimli Ücret:</strong> {{ route.discounted_cost }} TL
           </p>
+          {% if route.arrival_time %}
+          <p><strong>Varış Saati:</strong> {{ route.arrival_time }}</p>
+          {% endif %}
+
+          <!-- Rota Haritası -->
+          <div id="map_{{ route_type }}" style="height: 300px"></div>
         </div>
       </div>
       {% else %}
@@ -89,10 +95,20 @@ content %}
     {% endfor %}
   </div>
 
-  <div class="mt-4 text-center">
-    <a href="{{ url_for('route_page') }}" class="btn btn-secondary btn-lg"
+  <div class="text-center">
+    <a href="{{ url_for('route_page') }}" class="btn btn-success btn-lg"
       >Yeni Rota Hesapla</a
     >
   </div>
 </div>
+{% endblock %} {% block scripts %} {{ super() }}
+<script src="{{ url_for('static', filename='js/map_draw.js') }}"></script>
+<script>
+  // Rota haritalarını çiz
+  {% for route_type, route in routes.items() %}
+    {% if route and route.latlon_segments %}
+      drawRouteOnMap("map_{{ route_type }}", {{ route.latlon_segments|tojson }});
+    {% endif %}
+  {% endfor %}
+</script>
 {% endblock %}
