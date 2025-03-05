@@ -1,0 +1,18 @@
+<!-- templates/index.html -->
+{% extends "base.html" %} {% block title %}Ana Sayfa - Ulaşım Rota Planlama
+Sistemi{% endblock %} {% block content %}
+<div class="jumbotron p-5 mb-4 bg-light rounded-3">
+  <div class="container py-5">
+    <h1 class="display-5 fw-bold">Hoş Geldiniz!</h1>
+    <p class="col-md-8 fs-4">
+      Bu sistem, Kocaeli ili İzmit ilçesi özelinde
+      <strong>otobüs, tramvay ve taksi</strong> seçeneklerini kullanarak en
+      uygun rotayı planlamanıza yardımcı olur. Harita üzerinden veya manuel
+      enlem-boylam girerek başlangıç ve varış noktalarınızı belirleyebilirsiniz.
+    </p>
+    <a href="{{ url_for('route_page') }}" class="btn btn-primary btn-lg"
+      >Rota Planlamaya Başla</a
+    >
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+<!-- templates/about.html -->
+{% extends "base.html" %} {% block title %}Hakkında - Ulaşım Rota Planlama
+Sistemi{% endblock %} {% block content %}
+<h1>Hakkında</h1>
+<p>
+  Bu proje, Kocaeli ili İzmit ilçesi özelinde bir
+  <strong>toplu taşıma ve taksi sistemi</strong> tasarlayarak, kullanıcının
+  mevcut konumundan belirli bir hedef noktaya (enlem ve boylam) en uygun rota
+  ile ulaşmasını sağlamayı amaçlamaktadır. Rota belirleme sürecinde maliyet,
+  süre, aktarma sayısı gibi faktörler dikkate alınarak kullanıcıya en verimli
+  güzergâh önerilecektir.
+</p>
+
+<div class="my-4 text-center">
+  <img
+    src="{{ url_for('static', filename='images/sekil1.png') }}"
+    alt="Şekil 1"
+    class="img-fluid shadow-sm"
+  />
+  <p class="text-muted mt-2">
+    Şekil 1: Otobüs ve Tramvay Hatları Arasındaki Bağlantılar
+  </p>
+</div>
+
+<p>
+  Proje Nesne Yönelimli Programlama (OOP) prensipleriyle geliştirilmiştir.
+  Otobüs, Tramvay, Taksi gibi farklı araç sınıfları; Öğrenci, Yaşlı, Genel gibi
+  farklı yolcu tipleri, ödeme yöntemleri vb. esnek bir mimariyle
+  yönetilmektedir.
+</p>
+{% endblock %}

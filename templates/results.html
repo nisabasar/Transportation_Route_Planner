@@ -1,0 +1,98 @@
+<!-- templates/results.html -->
+{% extends "base.html" %} {% block title %}Rota Sonuçları{% endblock %} {% block
+content %}
+<div class="fade-in-up">
+  <h1 class="mb-4">Rota Sonuçları</h1>
+  <p class="text-muted">
+    Girdiğiniz bilgilere göre hesaplanan alternatif rota seçenekleri aşağıdadır.
+  </p>
+
+  <ul class="nav nav-tabs" id="routeTab" role="tablist">
+    {% for route_type, route in routes.items() %}
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link {% if loop.first %}active{% endif %}"
+        id="{{ route_type }}-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#{{ route_type }}"
+        type="button"
+        role="tab"
+        aria-controls="{{ route_type }}"
+        aria-selected="{% if loop.first %}true{% else %}false{% endif %}"
+      >
+        {{ route_type | replace('_', ' ') | capitalize }}
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content mt-3" id="routeTabContent">
+    {% for route_type, route in routes.items() %}
+    <div
+      class="tab-pane fade {% if loop.first %}show active{% endif %}"
+      id="{{ route_type }}"
+      role="tabpanel"
+      aria-labelledby="{{ route_type }}-tab"
+    >
+      {% if route %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">
+            {{ route_type | replace('_', ' ') | capitalize }} Rota Detayları
+          </h5>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Aşama</th>
+                <th>Başlangıç</th>
+                <th>Varış</th>
+                <th>Ulaşım</th>
+                <th>Süre (dk)</th>
+                <th>Mesafe (km)</th>
+                <th>Ücret (TL)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for step in route.steps %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ step.from }}</td>
+                <td>{{ step.to }}</td>
+                <td>
+                  {% if step.mode == 'taksi' %}🚖 Taksi {% elif step.mode ==
+                  'bus' %}🚌 Otobüs {% elif step.mode == 'tram' %}🚋 Tramvay {%
+                  elif step.mode == 'yürüme' %}🚶 Yürüme {% elif step.mode ==
+                  'transfer' %}🔄 Transfer {% else %}{{ step.mode | capitalize
+                  }} {% endif %}
+                </td>
+                <td>{{ step.time }}</td>
+                <td>{{ step.distance }}</td>
+                <td>{{ step.cost }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p><strong>Toplam Süre:</strong> {{ route.total_time }} dk</p>
+          <p><strong>Toplam Mesafe:</strong> {{ route.total_distance }} km</p>
+          <p><strong>Toplam Ücret:</strong> {{ route.total_cost }} TL</p>
+          <p>
+            <strong>İndirimli Ücret:</strong> {{ route.discounted_cost }} TL
+          </p>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning" role="alert">
+        Bu rota için uygun bağlantı bulunamadı.
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="{{ url_for('route_page') }}" class="btn btn-secondary btn-lg"
+      >Yeni Rota Hesapla</a
+    >
+  </div>
+</div>
+{% endblock %}

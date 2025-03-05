@@ -1,0 +1,10 @@
+numpy==1.24.2           # Matematiksel işlemler ve veri yapıları için
+scipy==1.10.1           # Haversine gibi mesafe hesaplama işlemleri için
+geopy==2.3.0            # Coğrafi hesaplamalar ve mesafe ölçümleri için
+networkx==3.1           # Dijkstra algoritması ve yönlendirilmiş graf yapısı için
+matplotlib==3.7.1       # Rota ve verilerin görselleştirilmesi için
+folium==0.14.0          # Harita ve coğrafi veri görselleştirmesi için (opsiyonel)
+flask==2.3.2            # Web tabanlı arayüz (opsiyonel)
+pytest==7.4.0           # Testler için
+unittest2==1.1.0        # Python'un unittest kütüphanesi için ekstra destek
+Flask==2.2.2
