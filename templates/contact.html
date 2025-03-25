@@ -1,29 +1,22 @@
-<!-- templates/contact.html -->
-{% extends "base.html" %} {% block title %}İletişim{% endblock %} {% block
-content %}
+{% extends "base.html" %}
+{% block title %}İletişim{% endblock %}
+{% block content %}
 <div class="fade-in-up">
   <h1 class="mb-4">İletişim</h1>
   <div class="row">
-    <!-- İletişim Bilgileri -->
     <div class="col-md-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title mb-3">Proje Ekibiyle İletişim</h5>
           <p><strong>E-posta:</strong> ornek@kocaeli.edu.tr</p>
           <p><strong>Telefon:</strong> +90 262 XXX XX XX</p>
-          <p>
-            <strong>Adres:</strong> Kocaeli Üniversitesi Bilgisayar Mühendisliği
-            Bölümü, İzmit/Kocaeli
-          </p>
-          <hr />
-          <p>
-            Bu proje, Kocaeli ili İzmit ilçesi özelinde otobüs, tramvay ve taksi
-            sistemlerini kullanarak en uygun rota planlaması sunar.
-          </p>
+          <p><strong>Adres:</strong> Kocaeli Üniversitesi, İzmit/Kocaeli</p>
+          <hr/>
+          <p>Bu proje, Kocaeli ili İzmit ilçesi özelinde otobüs, tramvay ve taksi
+             sistemlerini kullanarak en uygun rota planlaması sunar.</p>
         </div>
       </div>
     </div>
-    <!-- İletişim Formu -->
     <div class="col-md-6 mb-3">
       <div class="card">
         <div class="card-body">
@@ -31,30 +24,15 @@ content %}
           <form method="post" action="#">
             <div class="mb-3">
               <label for="name" class="form-label">Adınız Soyadınız</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                placeholder="Adınız Soyadınız"
-              />
+              <input type="text" class="form-control" id="name" placeholder="Adınız Soyadınız"/>
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">E-posta</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                placeholder="email@ornek.com"
-              />
+              <input type="email" class="form-control" id="email" placeholder="email@ornek.com"/>
             </div>
             <div class="mb-3">
               <label for="message" class="form-label">Mesajınız</label>
-              <textarea
-                class="form-control"
-                id="message"
-                rows="4"
-                placeholder="Mesajınızı yazınız..."
-              ></textarea>
+              <textarea class="form-control" id="message" rows="4" placeholder="Mesajınızı yazınız..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-lg">Gönder</button>
           </form>

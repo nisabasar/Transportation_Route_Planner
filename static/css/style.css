@@ -1,6 +1,3 @@
-/* static/css/style.css */
-
-/* Genel gövde ayarları */
 body {
   background-color: #f4f4f4;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -8,7 +5,6 @@ body {
   padding: 0;
 }
 
-/* Navbar: */
 .navbar {
   background-color: #7ed787;
 }
@@ -17,10 +13,9 @@ body {
   color: #ffffff !important;
 }
 .nav-link:hover {
-  color: #042122 !important; /* amber hover */
+  color: #042122 !important;
 }
 
-/* Footer: , beyaz metin */
 footer {
   background-color: #7ed787;
   color: #ffffff;
@@ -30,7 +25,6 @@ footer p {
   margin: 0;
 }
 
-/* Butonlar */
 .btn-primary {
   background-color: #3ab73a;
   border: none;
@@ -40,7 +34,6 @@ footer p {
   background-color: #0da60d;
 }
 
-/* Kartlar */
 .card {
   border: none;
   border-radius: 8px;
@@ -48,7 +41,6 @@ footer p {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Form elemanları */
 input.form-control,
 select.form-select {
   border-radius: 4px;
@@ -61,7 +53,6 @@ select.form-select:focus {
   box-shadow: none;
 }
 
-/* Harita */
 #map {
   width: 100%;
   height: 400px;
@@ -69,7 +60,6 @@ select.form-select:focus {
   border-radius: 6px;
 }
 
-/* Fade-in-up animasyonu */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -84,59 +74,38 @@ select.form-select:focus {
   animation: fadeInUp 0.5s ease-out;
 }
 
-/* Rota tablosu (thead, tbody, tfoot) metin rengini koyulaştır */
 .table thead th,
 .table tbody td,
 .table tfoot td {
-  color: #333 !important; /* Koyu gri yazı */
+  color: #333 !important;
 }
-
-/* İsteğe bağlı: thead arka planını da biraz açık yeşil veya beyazimsi yapabilirsiniz */
 .table thead th {
-  background-color: #ecfaec !important; /* Açık yeşil ton */
+  background-color: #ecfaec !important;
 }
 
-/* Butonun ana rengi */
-.btn-primary {
-  background-color: #3ab73a !important; /* Yeşil arka plan */
-  border-color: #3ab73a !important;
-  color: #fff !important; /* Metin rengi beyaz */
-  transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-  background-color: #0da60d !important; /* Daha koyu yeşil */
-  border-color: #0da60d !important;
-  color: #fff !important;
-}
-
-/* Pasif sekmelerin (aktif olmayan tab) metin rengi ve arka planı */
 .nav-tabs .nav-link {
-  color: #333 !important; /* Pasif sekmelerin metin rengi */
-  background-color: #fff !important; /* Pasif sekmelerin arka planı */
-  border: 1px solid transparent; /* Sınır çizgisi (isteğe bağlı) */
+  color: #333 !important;
+  background-color: #fff !important;
+  border: 1px solid transparent;
 }
-
-/* Pasif sekme hover efekti (üzerine gelince) */
 .nav-tabs .nav-link:hover {
-  color: #0da60d !important; /* İstediğiniz başka bir renk de verebilirsiniz */
+  color: #0da60d !important;
   background-color: #f3fff3 !important;
 }
-
-/* Aktif sekme (seçili olan tab) metin ve arka plan rengi */
 .nav-tabs .nav-link.active {
-  color: #000000 !important; /* Aktif sekme yazısı beyaz */
-  background-color: #f3fff3 !important; /* Aktif sekme arka planı yeşil */
-  border-color: #3ab73a #3ab73a #fff; /* Üst, yan ve alt sınır renkleri */
+  color: #000000 !important;
+  background-color: #f3fff3 !important;
+  border-color: #3ab73a #3ab73a #fff;
 }
+
 .btn-secondary {
-  background-color: #3ab73a !important; /* Yeşil arka plan */
+  background-color: #3ab73a !important;
   border-color: #3ab73a !important;
-  color: #fff !important; /* Metin rengi beyaz */
+  color: #fff !important;
   transition: background-color 0.3s ease;
 }
 .btn-secondary:hover {
-  background-color: #0da60d !important; /* Daha koyu yeşil */
+  background-color: #0da60d !important;
   border-color: #0da60d !important;
   color: #fff !important;
 }

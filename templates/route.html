@@ -1,23 +1,20 @@
-<!-- templates/route.html -->
-{% extends "base.html" %} {% block title %}Rota Planlama{% endblock %} {% block
-content %}
+{% extends "base.html" %}
+{% block title %}Rota Planlama{% endblock %}
+{% block content %}
 <div class="fade-in-up">
   <h1 class="mb-4">Rota Planlama</h1>
   <div class="row">
-    <!-- Harita Kısmı -->
+    <!-- Harita -->
     <div class="col-lg-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Harita Tabanlı Konum Seçimi</h5>
-          <p class="card-text">
-            Haritaya tıklayarak başlangıç ve varış noktalarınızı
-            belirleyebilirsiniz.
-          </p>
-          <div id="map"></div>
+          <p class="card-text">Haritaya tıklayarak başlangıç ve varış noktalarınızı belirleyebilirsiniz.</p>
+          <div id="map" style="height: 400px;"></div>
         </div>
       </div>
     </div>
-    <!-- Manuel Giriş Kısmı -->
+    <!-- Manuel Giriş -->
     <div class="col-lg-6 mb-3">
       <div class="card">
         <div class="card-body">
@@ -25,81 +22,36 @@ content %}
           <form action="{{ url_for('plan') }}" method="post">
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="start_lat" class="form-label"
-                  >Başlangıç Enlem</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="start_lat"
-                  name="start_lat"
-                  placeholder="40.78259"
-                  required
-                />
+                <label for="start_lat" class="form-label">Başlangıç Enlem</label>
+                <input type="text" class="form-control" id="start_lat" name="start_lat" required />
               </div>
               <div class="col-md-6 mb-3">
-                <label for="start_lon" class="form-label"
-                  >Başlangıç Boylam</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="start_lon"
-                  name="start_lon"
-                  placeholder="29.94628"
-                  required
-                />
+                <label for="start_lon" class="form-label">Başlangıç Boylam</label>
+                <input type="text" class="form-control" id="start_lon" name="start_lon" required />
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="dest_lat" class="form-label">Varış Enlem</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="dest_lat"
-                  name="dest_lat"
-                  placeholder="40.770965"
-                  required
-                />
+                <input type="text" class="form-control" id="dest_lat" name="dest_lat" required />
               </div>
               <div class="col-md-6 mb-3">
                 <label for="dest_lon" class="form-label">Varış Boylam</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="dest_lon"
-                  name="dest_lon"
-                  placeholder="29.959499"
-                  required
-                />
+                <input type="text" class="form-control" id="dest_lon" name="dest_lon" required />
               </div>
             </div>
             <div class="mb-3">
-              <label for="start_time" class="form-label"
-                >Seyahat Başlangıç Zamanı</label
-              >
-              <input
-                type="datetime-local"
-                class="form-control"
-                id="start_time"
-                name="start_time"
-                required
-              />
+              <label for="start_time" class="form-label">Seyahat Başlangıç Zamanı</label>
+              <input type="datetime-local" class="form-control" id="start_time" name="start_time" required />
             </div>
             <div class="mb-3">
               <label for="passenger_type" class="form-label">Yolcu Tipi</label>
-              <select
-                id="passenger_type"
-                name="passenger_type"
-                class="form-select"
-              >
+              <select id="passenger_type" name="passenger_type" class="form-select">
                 <option value="genel">Genel</option>
                 <option value="ogrenci">Öğrenci</option>
                 <option value="65+">65+</option>
               </select>
             </div>
-            <!-- Ödeme Seçimi -->
             <div class="mb-3">
               <label for="payment_type" class="form-label">Ödeme Yöntemi</label>
               <select id="payment_type" name="payment_type" class="form-select">
@@ -108,32 +60,25 @@ content %}
                 <option value="kentkart">KentKart</option>
               </select>
             </div>
-            <!-- Bakiye/Limit -->
             <div class="mb-3">
-              <label for="payment_amount" class="form-label"
-                >Bakiye / Limit (TL)</label
-              >
-              <input
-                type="number"
-                class="form-control"
-                id="payment_amount"
-                name="payment_amount"
-                placeholder="100"
-              />
+              <label for="payment_amount" class="form-label">Bakiye / Limit (TL)</label>
+              <input type="number" class="form-control" id="payment_amount" name="payment_amount" placeholder="100" />
             </div>
-
-            <button type="submit" class="btn btn-primary btn-lg">
-              Rotayı Hesapla
-            </button>
+            <div class="mb-3 form-check">
+              <input class="form-check-input" type="checkbox" id="special_day" name="special_day" />
+              <label class="form-check-label" for="special_day">Özel Gün (Otobüs/Tramvay Ücretsiz)</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Rotayı Hesapla</button>
           </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %} {% block scripts %} {{ super() }}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
 <script>
-  // Leaflet harita başlatma
   const map = L.map("map").setView([40.78259, 29.94628], 13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap Katkıda Bulunanlar",

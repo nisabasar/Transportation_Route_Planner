@@ -2,7 +2,6 @@
 import math
 
 def haversine(lat1, lon1, lat2, lon2):
-    # Dünya yarıçapı (km)
     R = 6371.0
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)

@@ -13,7 +13,7 @@ class Nakit(Payment):
     def pay(self, amount):
         if self.cash_amount >= amount:
             self.cash_amount -= amount
-            return True, f"Nakit ile {amount} TL ödendi. Kalan bakiye: {self.cash_amount} TL"
+            return True, f"Nakit ile {round(amount, 2)} TL ödendi. Kalan bakiye: {round(self.cash_amount, 2)} TL"
         else:
             return False, "Yetersiz nakit."
 
@@ -24,7 +24,7 @@ class KrediKarti(Payment):
     def pay(self, amount):
         if self.credit_limit >= amount:
             self.credit_limit -= amount
-            return True, f"Kredi kartından {amount} TL ödendi. Kalan limit: {self.credit_limit} TL"
+            return True, f"Kredi kartından {round(amount, 2)} TL ödendi. Kalan limit: {round(self.credit_limit, 2)} TL"
         else:
             return False, "Kredi kartı limiti yetersiz."
 
@@ -35,6 +35,6 @@ class KentKart(Payment):
     def pay(self, amount):
         if self.kentkart_balance >= amount:
             self.kentkart_balance -= amount
-            return True, f"KentKart ile {amount} TL ödendi. Kalan bakiye: {self.kentkart_balance} TL"
+            return True, f"KentKart ile {round(amount, 2)} TL ödendi. Kalan bakiye: {round(self.kentkart_balance, 2)} TL"
         else:
             return False, "KentKart bakiyesi yetersiz."

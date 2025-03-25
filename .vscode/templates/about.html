@@ -1,0 +1,27 @@
+<!-- templates/about.html -->
+{% extends "base.html" %} {% block title %}Hakkında{% endblock %} {% block
+content %}
+<div class="fade-in-up">
+  <h1>Hakkında</h1>
+  <p>
+    Bu proje, İzmit bölgesinde bir toplu taşıma ve taksi sistemi tasarlayarak,
+    kullanıcının mevcut konumundan belirli bir hedefe en uygun güzergâhı sunmayı
+    amaçlar.
+  </p>
+  <div class="text-center my-4">
+    <img
+      src="{{ url_for('static', filename='images/sekil1.png') }}"
+      alt="Şekil 1"
+      class="img-fluid shadow-sm"
+    />
+    <p class="text-muted mt-2">
+      Şekil 1: Otobüs ve Tramvay Hatları Arasındaki Bağlantılar
+    </p>
+  </div>
+  <p>
+    Proje; tek yönlü taşıma, aktarma indirimleri, yolcu tipi indirimleri, ödeme
+    yöntemleri ve harita entegrasyonu gibi özellikleri içerecek şekilde, OOP
+    prensipleri kullanılarak geliştirilmiştir.
+  </p>
+</div>
+{% endblock %}

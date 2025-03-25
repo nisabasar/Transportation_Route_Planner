@@ -14,8 +14,7 @@ class Bus(Vehicle):
         super().__init__("Otobüs")
 
     def calculate_cost(self, distance):
-        # Otobüs ücretleri veri seti üzerinden sağlanabilir; burada basit hesaplama yapılmamıştır.
-        return None
+        return None  # Otobüs ücret hesaplaması veri setinden alınır
 
 class Tram(Vehicle):
     def __init__(self):

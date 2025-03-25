@@ -26,6 +26,6 @@ class Ogrenci(Passenger):
 class Yasli(Passenger):
     def __init__(self):
         super().__init__("65+")
-        
+
     def get_discount_rate(self):
-        return 0.3  # Örneğin %30 indirim
+        return 0.3  # %30 indirim
