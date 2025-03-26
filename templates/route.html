@@ -10,7 +10,7 @@
         <div class="card-body">
           <h5 class="card-title">Harita Tabanlı Konum Seçimi</h5>
           <p class="card-text">Haritaya tıklayarak başlangıç ve varış noktalarınızı belirleyebilirsiniz.</p>
-          <div id="map" style="height: 400px;"></div>
+          <div id="map" style="height:400px;"></div>
         </div>
       </div>
     </div>
@@ -23,26 +23,26 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="start_lat" class="form-label">Başlangıç Enlem</label>
-                <input type="text" class="form-control" id="start_lat" name="start_lat" required />
+                <input type="text" class="form-control" id="start_lat" name="start_lat" required/>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="start_lon" class="form-label">Başlangıç Boylam</label>
-                <input type="text" class="form-control" id="start_lon" name="start_lon" required />
+                <input type="text" class="form-control" id="start_lon" name="start_lon" required/>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="dest_lat" class="form-label">Varış Enlem</label>
-                <input type="text" class="form-control" id="dest_lat" name="dest_lat" required />
+                <input type="text" class="form-control" id="dest_lat" name="dest_lat" required/>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="dest_lon" class="form-label">Varış Boylam</label>
-                <input type="text" class="form-control" id="dest_lon" name="dest_lon" required />
+                <input type="text" class="form-control" id="dest_lon" name="dest_lon" required/>
               </div>
             </div>
             <div class="mb-3">
               <label for="start_time" class="form-label">Seyahat Başlangıç Zamanı</label>
-              <input type="datetime-local" class="form-control" id="start_time" name="start_time" required />
+              <input type="datetime-local" class="form-control" id="start_time" name="start_time" required/>
             </div>
             <div class="mb-3">
               <label for="passenger_type" class="form-label">Yolcu Tipi</label>
@@ -62,10 +62,10 @@
             </div>
             <div class="mb-3">
               <label for="payment_amount" class="form-label">Bakiye / Limit (TL)</label>
-              <input type="number" class="form-control" id="payment_amount" name="payment_amount" placeholder="100" />
+              <input type="number" class="form-control" id="payment_amount" name="payment_amount" placeholder="100"/>
             </div>
             <div class="mb-3 form-check">
-              <input class="form-check-input" type="checkbox" id="special_day" name="special_day" />
+              <input class="form-check-input" type="checkbox" id="special_day" name="special_day"/>
               <label class="form-check-label" for="special_day">Özel Gün (Otobüs/Tramvay Ücretsiz)</label>
             </div>
             <button type="submit" class="btn btn-primary btn-lg">Rotayı Hesapla</button>
@@ -78,28 +78,5 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script>
-  const map = L.map("map").setView([40.78259, 29.94628], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap Katkıda Bulunanlar",
-  }).addTo(map);
-  let startMarker, endMarker;
-  map.on("click", function (e) {
-    if (!startMarker) {
-      startMarker = L.marker(e.latlng, { draggable: true })
-        .addTo(map)
-        .bindPopup("Başlangıç Noktası")
-        .openPopup();
-      document.getElementById("start_lat").value = e.latlng.lat;
-      document.getElementById("start_lon").value = e.latlng.lng;
-    } else if (!endMarker) {
-      endMarker = L.marker(e.latlng, { draggable: true })
-        .addTo(map)
-        .bindPopup("Varış Noktası")
-        .openPopup();
-      document.getElementById("dest_lat").value = e.latlng.lat;
-      document.getElementById("dest_lon").value = e.latlng.lng;
-    }
-  });
-</script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

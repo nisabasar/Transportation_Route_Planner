@@ -45,6 +45,12 @@
           "mesafe": 4.0,
           "sure": 12,
           "ucret": 3.5
+        },
+        {
+          "stopId": "bus_41burda",
+          "mesafe": 4.5,
+          "sure": 14,
+          "ucret": 3.5
         }
       ],
       "transfer": {
@@ -90,6 +96,16 @@
       "type": "bus",
       "lat": 40.77788,
       "lon": 29.94991,
+      "sonDurak": true,
+      "nextStops": [],
+      "transfer": null
+    },
+    {
+      "id": "bus_41burda",
+      "name": "41 Burda AVM (Bus)",
+      "type": "bus",
+      "lat": 40.77731,
+      "lon": 29.92512,
       "sonDurak": true,
       "nextStops": [],
       "transfer": null

@@ -3,105 +3,97 @@
 {% block content %}
 <div class="fade-in-up">
   <h1 class="mb-4">Rota Sonuçları</h1>
-  <p>Girdiğiniz bilgilere göre hesaplanan alternatif rota seçenekleri aşağıdadır.</p>
+  <p>Hesaplanan alternatif rota seçenekleri aşağıdadır.</p>
 
   {% set route_labels = {
-    'rotaniz': 'Rotanız',
-    'sadece_taksi': '🚖 Sadece Taksi',
-    'sadece_otobus': '🚍 Sadece Otobüs',
-    'tramvay_oncelikli': '🚋 Tramvay Öncelikli',
-    'en_az_aktarmali': '🛑 En Az Aktarmalı Rota',
-    'karma': '🔄 Karma'
+    "rotaniz":"Rotanız",
+    "sadece_taksi":"🚖 Sadece Taksi",
+    "sadece_otobus":"🚌 Sadece Otobüs",
+    "sadece_tramvay":"🚋 Sadece Tramvay",
+    "otobus_tramvay":"🚌+🚋 Otobüs + Tramvay",
+    "taksi_otobus_tramvay":"🚖+🚌/🚋"
   } %}
 
-  <!-- Her rota için sekme oluşturuluyor; rota None olsa bile başlık gösteriliyor -->
   <ul class="nav nav-tabs" id="routeTab" role="tablist">
-    {% for route_type, route in routes.items() %}
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link {% if loop.first %}active{% endif %}"
-          id="{{ route_type }}-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#{{ route_type }}"
-          type="button"
-          role="tab"
-          aria-controls="{{ route_type }}"
-          aria-selected="{% if loop.first %}true{% else %}false{% endif %}"
-        >
-          {{ route_labels.get(route_type, route_type) }}
-        </button>
-      </li>
+    {% for rkey, route in routes.items() %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if loop.first %}active{% endif %}"
+              id="{{ rkey }}-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#{{ rkey }}"
+              type="button"
+              role="tab"
+              aria-controls="{{ rkey }}"
+              aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+        {{ route_labels.get(rkey, rkey) }}
+      </button>
+    </li>
     {% endfor %}
   </ul>
 
   <div class="tab-content mt-3" id="routeTabContent">
-    {% for route_type, route in routes.items() %}
+    {% for rkey, route in routes.items() %}
     <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
-         id="{{ route_type }}"
+         id="{{ rkey }}"
          role="tabpanel"
-         aria-labelledby="{{ route_type }}-tab">
+         aria-labelledby="{{ rkey }}-tab">
       {% if route %}
-        <div class="card mb-3">
-          <div class="card-body">
-            <h5 class="card-title">
-              {{ route_labels.get(route_type, route_type) }} Rota Detayları
-            </h5>
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead class="table-light">
-                  <tr>
-                    <th>Aşama</th>
-                    <th>Başlangıç</th>
-                    <th>Varış</th>
-                    <th>Ulaşım</th>
-                    <th>Süre (dk)</th>
-                    <th>Mesafe (km)</th>
-                    <th>Base Ücret (TL)</th>
-                    <th>Final Ücret (TL)</th>
-                    <th>Açıklama</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for step in route.steps %}
-                  <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ step.from }}</td>
-                    <td>{{ step.to }}</td>
-                    <td>
-                      {% if step.mode == 'taksi' %}🚖 Taksi
-                      {% elif step.mode == 'bus' %}🚌 Otobüs
-                      {% elif step.mode == 'tram' %}🚋 Tramvay
-                      {% elif step.mode == 'yürüme' %}🚶 Yürüme
-                      {% elif step.mode == 'transfer' %}🔄 Transfer
-                      {% else %}{{ step.mode }}{% endif %}
-                    </td>
-                    <td>{{ step.time }}</td>
-                    <td>{{ step.distance }}</td>
-                    <td>{{ step.base_cost }}</td>
-                    <td>{{ step.final_cost }}</td>
-                    <td>{{ step.discount_explanation }}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-            <p><strong>Toplam Süre:</strong> {{ route.total_time }} dk</p>
-            <p><strong>Toplam Mesafe:</strong> {{ route.total_distance }} km</p>
-            <p><strong>Toplam Ücret (Final):</strong> {{ route.total_cost }} TL</p>
-            {% if route.arrival_time %}
-            <p><strong>Varış Saati:</strong> {{ route.arrival_time }}</p>
-            {% endif %}
-            {% if payment_results[route_type] %}
-            <p><strong>Ödeme Durumu:</strong> {{ payment_results[route_type].message }}</p>
-            {% endif %}
-            <!-- Harita konteyneri -->
-            <div id="map_{{ route_type }}" style="height: 300px;"></div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ route_labels.get(rkey, rkey) }} Rota Detayları</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Aşama</th>
+                  <th>Başlangıç</th>
+                  <th>Varış</th>
+                  <th>Ulaşım</th>
+                  <th>Süre (dk)</th>
+                  <th>Mesafe (km)</th>
+                  <th>Base Ücret (TL)</th>
+                  <th>Final Ücret (TL)</th>
+                  <th>Açıklama</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for step in route.steps %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ step.from }}</td>
+                  <td>{{ step.to }}</td>
+                  <td>
+                    {% if step.mode=='walk' %}🚶 Yürüme
+                    {% elif step.mode=='taksi' %}🚖 Taksi
+                    {% elif step.mode=='bus' %}🚌 Otobüs
+                    {% elif step.mode=='tram' %}🚋 Tramvay
+                    {% elif step.mode=='transfer' %}🔄 Transfer
+                    {% else %}{{ step.mode }}{% endif %}
+                  </td>
+                  <td>{{ step.time }}</td>
+                  <td>{{ step.distance }}</td>
+                  <td>{{ step.base_cost }}</td>
+                  <td>{{ step.final_cost }}</td>
+                  <td>{{ step.discount_explanation }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
+          <p><strong>Toplam Süre:</strong> {{ route.total_time }} dk</p>
+          <p><strong>Toplam Mesafe:</strong> {{ route.total_distance }} km</p>
+          <p><strong>Toplam Ücret:</strong> {{ route.total_cost }} TL</p>
+          {% if route.arrival_time %}
+            <p><strong>Varış Saati:</strong> {{ route.arrival_time }}</p>
+          {% endif %}
+          {% if payment_results[rkey] %}
+            <p><strong>Ödeme Durumu:</strong> {{ payment_results[rkey].message }}</p>
+          {% endif %}
+          <div id="map_{{ rkey }}" style="height:300px;"></div>
         </div>
+      </div>
       {% else %}
-        <div class="alert alert-warning" role="alert">
-          Bu rota için uygun bağlantı bulunamadı.
-        </div>
+      <div class="alert alert-warning">Bu rota için uygun bağlantı bulunamadı.</div>
       {% endif %}
     </div>
     {% endfor %}
@@ -112,37 +104,32 @@
   </div>
 </div>
 {% endblock %}
-
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/map_draw.js') }}"></script>
 <script>
-  // Her rota sekmesi için harita nesnelerini saklayacağımız sözlük
+document.addEventListener("DOMContentLoaded", () => {
   let routeMaps = {};
+  {% for rkey, route in routes.items() %}
+    {% if route and route.latlon_segments %}
+      routeMaps["{{ rkey }}"] = drawRouteOnMap("map_{{ rkey }}", {{ route.latlon_segments|tojson }}, false);
+    {% else %}
+      routeMaps["{{ rkey }}"] = null;
+    {% endif %}
+  {% endfor %}
 
-  document.addEventListener("DOMContentLoaded", () => {
-    // Her rota sekmesindeki haritayı oluşturup routeMaps'e ekleyelim
-    {% for route_type, route in routes.items() %}
-      {% if route and route.latlon_segments %}
-        routeMaps["{{ route_type }}"] = drawRouteOnMap("map_{{ route_type }}", {{ route.latlon_segments|tojson }});
-      {% else %}
-        routeMaps["{{ route_type }}"] = null;
-      {% endif %}
-    {% endfor %}
-
-    // Her sekme aktif hale geldiğinde, ilgili harita nesnesinin invalidateSize() metodunu çağırın.
-    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
-    tabButtons.forEach((btn) => {
-      btn.addEventListener("shown.bs.tab", (event) => {
-        const targetId = event.target.getAttribute("data-bs-target").replace("#", "");
-        const mapObj = routeMaps[targetId];
-        if (mapObj) {
-          setTimeout(() => {
-            mapObj.invalidateSize();
-          }, 50);
-        }
-      });
+  const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("shown.bs.tab", (event) => {
+      const targetId = event.target.getAttribute("data-bs-target").replace("#","");
+      const mapObj = routeMaps[targetId];
+      if (mapObj) {
+        setTimeout(() => {
+          mapObj.invalidateSize();
+        }, 50);
+      }
     });
   });
+});
 </script>
 {% endblock %}

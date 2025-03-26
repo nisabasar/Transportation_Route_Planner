@@ -38,7 +38,7 @@ footer p {
   border: none;
   border-radius: 8px;
   background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 input.form-control,
@@ -60,6 +60,9 @@ select.form-select:focus {
   border-radius: 6px;
 }
 
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -70,13 +73,9 @@ select.form-select:focus {
     transform: translateY(0);
   }
 }
-.fade-in-up {
-  animation: fadeInUp 0.5s ease-out;
-}
 
 .table thead th,
-.table tbody td,
-.table tfoot td {
+.table tbody td {
   color: #333 !important;
 }
 .table thead th {
@@ -86,26 +85,17 @@ select.form-select:focus {
 .nav-tabs .nav-link {
   color: #333 !important;
   background-color: #fff !important;
-  border: 1px solid transparent;
-}
-.nav-tabs .nav-link:hover {
-  color: #0da60d !important;
-  background-color: #f3fff3 !important;
 }
 .nav-tabs .nav-link.active {
-  color: #000000 !important;
+  color: #000 !important;
   background-color: #f3fff3 !important;
-  border-color: #3ab73a #3ab73a #fff;
 }
 
-.btn-secondary {
+.btn-success {
   background-color: #3ab73a !important;
   border-color: #3ab73a !important;
-  color: #fff !important;
-  transition: background-color 0.3s ease;
 }
-.btn-secondary:hover {
+.btn-success:hover {
   background-color: #0da60d !important;
   border-color: #0da60d !important;
-  color: #fff !important;
 }

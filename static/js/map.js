@@ -2,11 +2,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const map = L.map("map").setView([40.78259, 29.94628], 13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap Katkıda Bulunanlar",
+    attribution: "&copy; OpenStreetMap Katkıda Bulunanlar"
   }).addTo(map);
 
-  let startMarker, destMarker;
-  map.on("click", function (e) {
+  let startMarker = null;
+  let destMarker = null;
+  map.on("click", (e) => {
     if (!startMarker) {
       startMarker = L.marker(e.latlng, { draggable: true })
         .addTo(map)

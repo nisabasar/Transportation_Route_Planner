@@ -1,3 +1,4 @@
 {
-  "python.analysis.extraPaths": ["./src"]
+  "python.analysis.extraPaths": ["./src"],
+  "html.validate.scripts": false
 }
